@@ -1,42 +1,46 @@
-const btn = document.querySelectorAll('button');
-const body = document.body;
+const startBtnRef = document.querySelector('button[data-action="start"]');
+const stopBtnRef = document.querySelector('button[data-action="stop"]');
+const bodyRef = document.querySelector("body");
+
 const colors = [
-  '#FFFFFF',
-  '#2196F3',
-  '#4CAF50',
-  '#FF9800',
-  '#009688',
-  '#795548',
+  "#FFFFFF",
+  "#2196F3",
+  "#4CAF50",
+  "#FF9800",
+  "#009688",
+  "#795548",
 ];
 
-let bul = false;
+const colorSwitch = {
+  intervalId: null,
+  isActive: false,
 
-const randomIntegerFromInterval = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  start() {
+    if (this.isActive) {
+      return;
+    }
+
+    this.intervalId = setInterval(changeColorHandler, 1000);
+    this.isActive = true;
+    startBtnRef.disabled = true;
+  },
+
+  stop() {
+    clearInterval(this.intervalId);
+    this.intervalId = null;
+    this.isActive = false;
+    startBtnRef.disabled = false;
+  },
 };
 
-btn[0].addEventListener('click', onChangeColor)
+startBtnRef.addEventListener("click", colorSwitch.start.bind(colorSwitch));
+stopBtnRef.addEventListener("click", colorSwitch.stop.bind(colorSwitch));
 
-function onChangeColor() {
-    btn[0].removeEventListener('click', onChangeColor);
-    window.colorBody = setInterval(colorOfBody, 1000);
-    btn[1].addEventListener('click', offChangeColor);
-} 
-
-function colorOfBody() {
-  body.style.backgroundColor =
-    colors[randomIntegerFromInterval(0, colors.length)];
+function changeColorHandler() {
+  bodyRef.style.backgroundColor =
+    colors[randomIntegerFromInterval(0, colors.length - 1)];
 }
 
-function offChangeColor() {
-  clearInterval(window.colorBody);
-  changeDisabled();
-  btn[0].addEventListener('click', onChangeColor);
-  btn[1].removeEventListener('click', offChangeColor);
-}
-
-function changeDisabled() {
-  btn[1].disabled = bul;
-  btn[0].disabled = !bul;
-  bul = !bul;
+function randomIntegerFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
